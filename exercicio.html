@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    .completed { text-decoration: line-through; color: grey; }
+    .high-priority { color: red; font-weight: bold; }
+    .medium-priority { color: orange; }
+    .low-priority { color: green; }
+    ul { list-style-type: none; padding: 0; }
+</style>
+</head>
+<body>
+    <h1>Liata de tarefas </h1>
+
+    <form id="taskForm">
+        <input type="text" id="taskName" placeholder="Nome da tarefa" required>
+        <input type="date" id="taskDate" required>
+        <select id="taskPriority">
+            <option value="alta">Altas</option>
+            <option value="media">Média</option>
+            <option value="baixa">Baixa</option>
+        </select>
+        <button type="submit">adicionar tarefas </button>
+    </form>
+
+    <br>
+
+    <button id="filterButton">Filtrar Concluidas </button>
+    <button id="sortButton">Filtrar por Prioridade/data</button>]
+
+    <ul id="taskList"></ul>
+
+    <script>
+        let tasks = [];
+        let showCompleted= true;
+
+        function addTask (name,date,priority) {
+            task.push({
+                name,
+                date,
+                priority,
+                completed: false,
+            });
+            displayTasks();
+        }
+
+        function displayTasks() {
+            const taskList = document.getElementbyId('taskList');
+            taskList.innerHTML = '';
+
+            let filteredTasks = tasks.filter(task => showCompleted || task.completed);
+            filteredTasks.sort((a,b) => {
+                if (a.priority === b.priority) return new Date(a.date) - new Date(b.date);
+                return ['alta', 'media', 'baixa'].indexOf(a.priority) - ['alta', 'media', 'baixa'].indexOf(b.priority);
+            });
+            filteredTasks.forEach((task, index) => {
+                const taskItem = document.createElement('li');
+                taskItem.classList.toggle('completed', task.completed);
+                taskItem.classList.add(`${task.priority}-priority`);
+                
+                taskItem.innerHTML = `
+                  <input type="checkbox" onclick="toggleTask(${index})" ${task.completed ? 'checked' : ''}>
+                  <strong>${task.name}</strong> - ${task.date} (${task.priority})
+                `;
+                
+                taskList.appendChild(taskItem);
+              });
+            }
+        
+            
+            function toggleTask(index) {
+              tasks[index].completed = !tasks[index].completed;
+              displayTasks();
+            }
+        
+   
+            document.getElementById('filterButton').onclick = function() {
+              showCompleted = !showCompleted;
+              this.textContent = showCompleted ? 'Filtrar Concluídas' : 'Filtrar Pendentes';
+              displayTasks();
+            };
+        
+            document.getElementById('sortButton').onclick = function() {
+              displayTasks();
+            };
+        
+          
+            document.getElementById('taskForm').onsubmit = function(event) {
+              event.preventDefault();
+              const name = document.getElementById('taskName').value;
+              const date = document.getElementById('taskDate').value;
+              const priority = document.getElementById('taskPriority').value;
+              addTask(name, date, priority);
+              this.reset();
+            };
+        
+          
+        
+    </script>
+
+</body>
+</html>
